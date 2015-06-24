@@ -17,7 +17,7 @@ class Balloon(pygame.sprite.Sprite):
     CLIMB_DURATION: The # of ms for the balloon to make a complete ascent
     """
 
-    WIDTH = HEIGHT = 32
+    WIDTH = HEIGHT = 72
     SINK_SPEED = 0.18
     CLIMB_SPEED = 0.25
     CLIMB_DURATION = 333.3
@@ -100,14 +100,14 @@ def main():
 	    elif e.type == KEYUP and e.key in (K_UP, K_RETURN, K_SPACE):
 		balloon.msec_to_climb = Balloon.CLIMB_DURATION
 
-	for x in (0, screenInfo.current_w / 2):
-	    screen.blit(images['background'], (x, 0))
-
 	balloon.update()
+	screen.blit(images['background'], (balloon.rect.x, balloon.rect.y - 2), balloon.rect)
 	screen.blit(balloon.image, balloon.rect)
+
 
 	pygame.display.flip()
 	frame_clock += 1
+
 
     pygame.quit()
 
