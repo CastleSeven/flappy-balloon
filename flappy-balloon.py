@@ -81,6 +81,9 @@ def main():
     clock = pygame.time.Clock()
     images = load_images()
 
+    images['background'] = pygame.transform.scale(images['background'], (screenInfo.current_w, screenInfo.current_h))
+    screen.blit(images['background'], (0,0))
+
     balloon = Balloon(50, int(screenInfo.current_h/2 - Balloon.HEIGHT/2), 2, (images['balloon-flameoff'], images['balloon-flameon']))
 
     frame_clock = 0
