@@ -76,6 +76,7 @@ def main():
     screenInfo = pygame.display.Info()
     screen = pygame.display.set_mode((screenInfo.current_w, screenInfo.current_h), pygame.FULLSCREEN);
     pygame.display.set_caption('Flappy Balloon')
+    screen.set_alpha(None)
 
     clock = pygame.time.Clock()
     images = load_images()
