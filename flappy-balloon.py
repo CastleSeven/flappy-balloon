@@ -53,7 +53,7 @@ class Balloon(pygame.sprite.Sprite):
     def rect(self):
         return Rect(self.x, self.y, Balloon.WIDTH, Balloon.HEIGHT)
 
-class BalloonObstacle(pygame.sprite.Sprite):
+class Obstacle(pygame.sprite.Sprite):
     WIDTH = HEIGHT = 72
     ADD_INTERVAL = 3000
 
@@ -61,36 +61,29 @@ class BalloonObstacle(pygame.sprite.Sprite):
         self.x = float(WIN_WIDTH - 1)
         self.score_counted = False
 
-        self.image = pygame.Surface((BalloonObstacle.WIDTH, WIN_HEIGHT), SRCALPHA)
+        self.image = pygame.Surface((Obstacle.WIDTH, WIN_HEIGHT), SRCALPHA)
         self.image.convert()
         self.image.fill((0,0,0,0))
-        total_num_balloons = int((WIN_HEIGHT - 3 * Balloon.HEIGHT) / BalloonObstacle.HEIGHT)
-        self.bottom_balloons = randint(1,total_num_balloons)
-        self.top_balloons = total_num_balloons - self.bottom_balloons
-
-        for i in range(1, self.bottom_balloons + 1):
-            balloon_pos = (0, WIN_HEIGHT - i*BalloonObstacle.HEIGHT)
-            self.image.blit(balloon_obstacle_img, balloon_pos)
-        for i in range(self.top_balloons):
-            self.image.blit(balloon_obstacle_img, (0, i * BalloonObstacle.HEIGHT))
+	balloon_pos = (0, randint(Obstacle.HEIGHT, WIN_HEIGHT - Obstacle.HEIGHT))
+	self.image.blit(balloon_obstacle_img, balloon_pos)
 
         self.mask = pygame.mask.from_surface(self.image)
 
     @property
     def top_height_px(self):
-	return self.top_balloons * BalloonObstacle.HEIGHT
+	return self.top_balloons * Obstacle.HEIGHT
 
     @property
     def bottom_height_px(self):
-	return self.bottom_balloons * BalloonObstacle.HEIGHT
+	return self.bottom_balloons * Obstacle.HEIGHT
 
     @property
     def visible(self):
-	return -BalloonObstacle.WIDTH < self.x < WIN_WIDTH
+	return -Obstacle.WIDTH < self.x < WIN_WIDTH
 
     @property
     def rect(self):
-	return Rect(self.x, 0, BalloonObstacle.WIDTH, BalloonObstacle.HEIGHT)
+	return Rect(self.x, 0, Obstacle.WIDTH, Obstacle.HEIGHT)
 
     def update(self, delta_frames=1):
 	self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
@@ -145,8 +138,8 @@ def main():
     while not done:
         clock.tick(FPS)
 
-        if not(frame_clock % msec_to_frames(BalloonObstacle.ADD_INTERVAL)):
-            bo = BalloonObstacle(images['balloon-obstacle'])
+        if not(frame_clock % msec_to_frames(Obstacle.ADD_INTERVAL)):
+            bo = Obstacle(images['balloon-obstacle'])
             obstacles.append(bo)
 
         for e in pygame.event.get():
