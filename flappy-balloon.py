@@ -21,7 +21,8 @@ class Balloon(pygame.sprite.Sprite):
     CLIMB_DURATION: The # of ms for the balloon to make a complete ascent
     """
 
-    WIDTH = HEIGHT = 72
+    WIDTH = 212
+    HEIGHT = 300
     SINK_SPEED = 0.09
     CLIMB_SPEED = 0.15
     CLIMB_DURATION = 600.3
@@ -101,9 +102,9 @@ def load_images():
         return img
 
     return {'background': load_image('background.png'),
-            'balloon-flameon': load_image('balloon_flame_on.png'),
+            'balloon-flameon': load_image('player_flame_on.png'),
             'balloon-obstacle': load_image('balloon-obstacle.png'),
-            'balloon-flameoff': load_image('balloon_flame_off.png')}
+            'balloon-flameoff': load_image('player_flame_off.png')}
 
 
 def frames_to_msec(frames, fps=FPS):
@@ -164,7 +165,7 @@ def main():
 
         balloon.update()
         # Redraw only the portion of the background where the balloon is
-	screen.blit(images['background'], (balloon.rect.x, balloon.rect.y - 2), balloon.rect)
+        screen.blit(images['background'], (balloon.rect.x, balloon.rect.y - 2), (balloon.rect.x, balloon.rect.y, balloon.rect.width, balloon.rect.height + 7))
         # Redraw the balloon
         screen.blit(balloon.image, balloon.rect)
 
