@@ -61,36 +61,33 @@ class Obstacle(pygame.sprite.Sprite):
     def __init__(self, balloon_obstacle_img):
         self.x = float(WIN_WIDTH - 1)
         self.score_counted = False
-
-        self.image = pygame.Surface((Obstacle.WIDTH, WIN_HEIGHT), SRCALPHA)
-        self.image.convert()
-        self.image.fill((0,0,0,0))
-	balloon_pos = (0, randint(Obstacle.HEIGHT, WIN_HEIGHT - Obstacle.HEIGHT))
-	self.image.blit(balloon_obstacle_img, balloon_pos)
-
+        self.y = randint(Obstacle.HEIGHT, WIN_HEIGHT - Obstacle.HEIGHT)
+        self.img = balloon_obstacle_img
         self.mask = pygame.mask.from_surface(self.image)
 
-    @property
-    def top_height_px(self):
-	return self.top_balloons * Obstacle.HEIGHT
+        #self.image = pygame.Surface((Obstacle.WIDTH, Obstacle.HEIGHT), SRCALPHA)
+        #self.image.convert()
+        #self.image.fill((0,0,0,0))
+        #balloon_pos = (0, self.y)
+        #self.image.blit(balloon_obstacle_img, balloon_pos)
 
     @property
-    def bottom_height_px(self):
-	return self.bottom_balloons * Obstacle.HEIGHT
+    def image(self):
+        return self.img
 
     @property
     def visible(self):
-	return -Obstacle.WIDTH < self.x < WIN_WIDTH
+        return -Obstacle.WIDTH < self.x < WIN_WIDTH
 
     @property
     def rect(self):
-	return Rect(self.x, 0, Obstacle.WIDTH, Obstacle.HEIGHT)
+        return Rect(self.x, self.y, Obstacle.WIDTH, Obstacle.HEIGHT)
 
     def update(self, delta_frames=1):
-	self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
+        self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
 
     def collides_with(self, balloon):
-	return pygame.sprite.collide_mask(self,balloon)
+        return pygame.sprite.collide_mask(self,balloon)
 
 
 def load_images():
@@ -118,8 +115,6 @@ def main():
     pygame.init()
     screenInfo = pygame.display.Info()
     screen = pygame.display.set_mode((screenInfo.current_w, screenInfo.current_h), pygame.FULLSCREEN);
-    print screenInfo.current_w
-    print screenInfo.current_h
     pygame.display.set_caption('Flappy Balloon')
     screen.set_alpha(None)
 
@@ -158,16 +153,18 @@ def main():
         while obstacles and not obstacles[0].visible:
             obstacles.popleft()
 
-        for b in obstacles:
-            b.update()
-	    screen.blit(images['background'], (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width, WIN_HEIGHT))
-            screen.blit(b.image, b.rect)
-
         balloon.update()
         # Redraw only the portion of the background where the balloon is
         screen.blit(images['background'], (balloon.rect.x, balloon.rect.y - 2), (balloon.rect.x, balloon.rect.y, balloon.rect.width, balloon.rect.height + 7))
         # Redraw the balloon
         screen.blit(balloon.image, balloon.rect)
+
+        for b in obstacles:
+            b.update()
+            screen.blit(balloon.image, (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width, b.rect.height))
+            screen.blit(images['background'], (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width + 5, b.rect.height))
+            screen.blit(b.image, b.rect)
+
 
 
         pygame.display.flip()
