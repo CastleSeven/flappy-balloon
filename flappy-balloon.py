@@ -103,6 +103,35 @@ class Bird(pygame.sprite.Sprite):
         return pygame.sprite.collide_mask(self,balloon)
 
 
+class Plane(pygame.sprite.Sprite):
+    WIDTH = 235
+    HEIGHT = 144
+
+    def __init__(self, image):
+        self.x = float(WIN_WIDTH - 1)
+        self.score_counted = False
+        self.y = randint(Plane.HEIGHT, WIN_HEIGHT - Plane.HEIGHT)
+        self._img = image
+        self.mask = pygame.mask.from_surface(self.image)
+
+    @property
+    def image(self):
+        return self._img
+
+    @property
+    def visible(self):
+        return -Plane.WIDTH < self.x < WIN_WIDTH
+
+    @property
+    def rect(self):
+        return Rect(self.x, self.y, Plane.WIDTH, Plane.HEIGHT)
+
+    def update(self, delta_frames=1):
+        self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
+
+    def collides_with(self, balloon):
+        return pygame.sprite.collide_mask(self,balloon)
+
 def load_images():
 
     def load_image(img_file_name):
@@ -115,6 +144,7 @@ def load_images():
             'balloon-flameon': load_image('player_flame_on.png'),
             'bird-up': load_image('bird_up.png'),
             'bird-down': load_image('bird_down.png'),
+            'plane': load_image('plane.png'),
             'balloon-flameoff': load_image('player_flame_off.png')}
 
 
@@ -149,8 +179,13 @@ def main():
         clock.tick(FPS)
 
         if not(frame_clock % msec_to_frames(ADD_INTERVAL)):
-            bo = Bird((images['bird-up'], images['bird-down']))
-            obstacles.append(bo)
+            rand = randint(1,2)
+            if rand == 1:
+                obstacle = Bird((images['bird-up'], images['bird-down']))
+            elif rand == 2:
+                obstacle = Plane(images['plane'])
+
+            obstacles.append(obstacle)
 
         for e in pygame.event.get():
             if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
