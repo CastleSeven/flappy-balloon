@@ -11,6 +11,7 @@ FPS = 60;
 ANIMATION_SPEED = 0.30
 WIN_WIDTH = 1920;
 WIN_HEIGHT = 1080;
+ADD_INTERVAL = 5000
 
 class Balloon(pygame.sprite.Sprite):
     """
@@ -54,18 +55,21 @@ class Balloon(pygame.sprite.Sprite):
     def rect(self):
         return Rect(self.x, self.y, Balloon.WIDTH, Balloon.HEIGHT)
 
-class Obstacle(pygame.sprite.Sprite):
-    WIDTH = HEIGHT = 72
-    ADD_INTERVAL = 3000
+class Bird(pygame.sprite.Sprite):
+    WIDTH = 296
+    HEIGHT = 260
+    FLAP_SPEED = 100 # ms delay between flaps
 
-    def __init__(self, balloon_obstacle_img):
+    def __init__(self, images):
+        self.old_flap_time = pygame.time.get_ticks()
         self.x = float(WIN_WIDTH - 1)
         self.score_counted = False
-        self.y = randint(Obstacle.HEIGHT, WIN_HEIGHT - Obstacle.HEIGHT)
-        self.img = balloon_obstacle_img
+        self.y = randint(Bird.HEIGHT, WIN_HEIGHT - Bird.HEIGHT)
+        self._img_up, self._img_down = images
+        self._current_image = self._img_up
         self.mask = pygame.mask.from_surface(self.image)
 
-        #self.image = pygame.Surface((Obstacle.WIDTH, Obstacle.HEIGHT), SRCALPHA)
+        #self.image = pygame.Surface((Bird.WIDTH, Bird.HEIGHT), SRCALPHA)
         #self.image.convert()
         #self.image.fill((0,0,0,0))
         #balloon_pos = (0, self.y)
@@ -73,15 +77,24 @@ class Obstacle(pygame.sprite.Sprite):
 
     @property
     def image(self):
-        return self.img
+        current_time = pygame.time.get_ticks()
+        if (current_time - self.old_flap_time) > self.FLAP_SPEED:
+            self.old_flap_time = current_time
+            if self._current_image == self._img_up:
+                self._current_image = self._img_down
+                return self._img_down
+            else:
+                self._current_image = self._img_up
+                return self._img_up
+        return self._current_image
 
     @property
     def visible(self):
-        return -Obstacle.WIDTH < self.x < WIN_WIDTH
+        return -Bird.WIDTH < self.x < WIN_WIDTH
 
     @property
     def rect(self):
-        return Rect(self.x, self.y, Obstacle.WIDTH, Obstacle.HEIGHT)
+        return Rect(self.x, self.y, Bird.WIDTH, Bird.HEIGHT)
 
     def update(self, delta_frames=1):
         self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
@@ -100,7 +113,8 @@ def load_images():
 
     return {'background': load_image('background.png'),
             'balloon-flameon': load_image('player_flame_on.png'),
-            'balloon-obstacle': load_image('balloon-obstacle.png'),
+            'bird-up': load_image('bird_up.png'),
+            'bird-down': load_image('bird_down.png'),
             'balloon-flameoff': load_image('player_flame_off.png')}
 
 
@@ -134,8 +148,8 @@ def main():
     while not done:
         clock.tick(FPS)
 
-        if not(frame_clock % msec_to_frames(Obstacle.ADD_INTERVAL)):
-            bo = Obstacle(images['balloon-obstacle'])
+        if not(frame_clock % msec_to_frames(ADD_INTERVAL)):
+            bo = Bird((images['bird-up'], images['bird-down']))
             obstacles.append(bo)
 
         for e in pygame.event.get():
