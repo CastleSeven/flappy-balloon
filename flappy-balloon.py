@@ -94,7 +94,7 @@ class Bird(pygame.sprite.Sprite):
 
     @property
     def rect(self):
-        return Rect(self.x, self.y, Bird.WIDTH, Bird.HEIGHT)
+        return Rect(self.x, self.y + 40, Bird.WIDTH, Bird.HEIGHT + 75)
 
     def update(self, delta_frames=1):
         self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
