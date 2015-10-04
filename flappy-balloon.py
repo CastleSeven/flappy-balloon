@@ -169,9 +169,11 @@ def main():
     pygame.display.set_caption('Flappy Balloon')
     screen.set_alpha(None)
     count = OBSTACLE_GOAL
+    win = False
 
     # initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
     score_font = pygame.font.SysFont("monospace", 25, bold=True)
+    result_font = pygame.font.SysFont("monospace", 50, bold=True)
 
     clock = pygame.time.Clock()
     images = load_images()
@@ -185,6 +187,7 @@ def main():
 
     frame_clock = 0
     done = False
+    exit = False
 
     while not done:
         clock.tick(FPS)
@@ -201,6 +204,7 @@ def main():
         for e in pygame.event.get():
             if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
                 done = True
+                exit = True
                 break
             elif e.type == KEYUP and e.key in (K_UP, K_RETURN, K_SPACE):
                 balloon.msec_to_climb = Balloon.CLIMB_DURATION
@@ -208,6 +212,7 @@ def main():
 
         balloon_collision = any(b.collides_with(balloon) for b in obstacles)
         if balloon_collision or 0 >= balloon.y or balloon.y >= WIN_HEIGHT - Balloon.HEIGHT:
+            win = False
             done = True
 
         while obstacles and not obstacles[0].visible:
@@ -225,7 +230,8 @@ def main():
                 count -= 1
                 b.score_counted = True
             if count == 0:
-                pygame.quit()
+                done = True
+                win = True
             screen.blit(balloon.image, (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width, b.rect.height))
             screen.blit(images['background'], (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width + 5, b.rect.height))
             screen.blit(b.image, b.rect)
@@ -239,8 +245,23 @@ def main():
         frame_clock += 1
 
 
+    screen.blit(images['background'],(0,0))
 
-    pygame.quit()
+    if win:
+        score_surface = result_font.render("YOU WIN!", True, (0, 153, 0))
+        score_x = WIN_WIDTH/2 - score_surface.get_width()/2
+        screen.blit(score_surface, (score_x, WIN_HEIGHT/2))
+    else:
+        score_surface = result_font.render("GAME OVER!", True, (204, 0, 0))
+        score_x = WIN_WIDTH/2 - score_surface.get_width()/2
+        screen.blit(score_surface, (score_x, WIN_HEIGHT/2))
+
+    pygame.display.update()
+    if exit:
+        pygame.quit()
+    else:
+        pygame.time.wait(7000)
+        main()
 
 
 
