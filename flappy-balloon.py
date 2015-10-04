@@ -9,9 +9,10 @@ from pygame.locals import *
 
 FPS = 60;
 ANIMATION_SPEED = 0.30
-WIN_WIDTH = 1820;
-WIN_HEIGHT = 980;
+WIN_WIDTH = 1820
+WIN_HEIGHT = 980
 ADD_INTERVAL = 5000
+OBSTACLE_GOAL = 10
 
 class Balloon(pygame.sprite.Sprite):
     """
@@ -92,6 +93,9 @@ class Bird(pygame.sprite.Sprite):
     def visible(self):
         return -Bird.WIDTH < self.x < WIN_WIDTH
 
+    def passed(self, x):
+        return 0 < self.x < x
+
     @property
     def rect(self):
         return Rect(self.x, self.y + 40, Bird.WIDTH, Bird.HEIGHT + 75)
@@ -121,6 +125,9 @@ class Plane(pygame.sprite.Sprite):
     @property
     def visible(self):
         return -Plane.WIDTH < self.x < WIN_WIDTH
+
+    def passed(self, x):
+        return 0 < self.x < x
 
     @property
     def rect(self):
@@ -161,6 +168,10 @@ def main():
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pygame.FULLSCREEN);
     pygame.display.set_caption('Flappy Balloon')
     screen.set_alpha(None)
+    count = OBSTACLE_GOAL
+
+    # initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
+    score_font = pygame.font.SysFont("monospace", 25, bold=True)
 
     clock = pygame.time.Clock()
     images = load_images()
@@ -210,11 +221,19 @@ def main():
 
         for b in obstacles:
             b.update()
+            if b.passed(balloon.rect.x) and b.score_counted == False:
+                count -= 1
+                b.score_counted = True
+            if count == 0:
+                pygame.quit()
             screen.blit(balloon.image, (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width, b.rect.height))
             screen.blit(images['background'], (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width + 5, b.rect.height))
             screen.blit(b.image, b.rect)
 
-
+        score_surface = score_font.render("Obstacles Left: %02d" % count, True, (255, 255, 255))
+        score_x = WIN_WIDTH/2 - score_surface.get_width()/2
+        screen.blit(images['background'], (score_x, 10), score_surface.get_rect())
+        screen.blit(score_surface, (score_x, 10))
 
         pygame.display.flip()
         frame_clock += 1
