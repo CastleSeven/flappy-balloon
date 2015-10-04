@@ -137,7 +137,7 @@ def load_images():
     def load_image(img_file_name):
         file_name = os.path.join('.', 'images', img_file_name)
         img = pygame.image.load(file_name)
-        img.convert()
+        img.convert_alpha()
         return img
 
     return {'background': load_image('background.png'),
