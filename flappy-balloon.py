@@ -9,8 +9,8 @@ from pygame.locals import *
 
 FPS = 60;
 ANIMATION_SPEED = 0.30
-WIN_WIDTH = 1920;
-WIN_HEIGHT = 1080;
+WIN_WIDTH = 1820;
+WIN_HEIGHT = 980;
 ADD_INTERVAL = 5000
 
 class Balloon(pygame.sprite.Sprite):
@@ -158,7 +158,7 @@ def main():
     # Set up pygame and the screen
     pygame.init()
     screenInfo = pygame.display.Info()
-    screen = pygame.display.set_mode((screenInfo.current_w, screenInfo.current_h), pygame.FULLSCREEN);
+    screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pygame.FULLSCREEN);
     pygame.display.set_caption('Flappy Balloon')
     screen.set_alpha(None)
 
