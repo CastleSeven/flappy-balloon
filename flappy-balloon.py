@@ -171,6 +171,7 @@ def main():
     screen.set_alpha(None)
     count = OBSTACLE_GOAL
     win = False
+    paused = False
 
     # initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
     score_font = pygame.font.SysFont("monospace", 25, bold=True)
@@ -215,8 +216,11 @@ def main():
             elif e.type == KEYUP and e.key in (K_UP, K_RETURN, K_SPACE):
                 balloon.msec_to_climb = Balloon.CLIMB_DURATION
                 burner.play()
+            elif e.type == KEYUP and e.key in (K_PAUSE, K_p):
+                paused = not paused
 
-
+        if paused:
+            continue
 
 
         balloon_collision = any(b.collides_with(balloon) for b in obstacles)
