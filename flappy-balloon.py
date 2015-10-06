@@ -164,6 +164,7 @@ def msec_to_frames(milliseconds, fps=FPS):
 def main():
     # Set up pygame and the screen
     pygame.init()
+    pygame.mixer.init()
     screenInfo = pygame.display.Info()
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pygame.FULLSCREEN);
     pygame.display.set_caption('Flappy Balloon')
@@ -189,6 +190,11 @@ def main():
     done = False
     exit = False
 
+    try:
+        burner = pygame.mixer.Sound("snd/burner.wav");
+    except:
+        print "Cannot load sound: burner.wav"
+
     while not done:
         clock.tick(FPS)
 
@@ -208,6 +214,9 @@ def main():
                 break
             elif e.type == KEYUP and e.key in (K_UP, K_RETURN, K_SPACE):
                 balloon.msec_to_climb = Balloon.CLIMB_DURATION
+                burner.play()
+
+
 
 
         balloon_collision = any(b.collides_with(balloon) for b in obstacles)
@@ -258,6 +267,7 @@ def main():
 
     pygame.display.update()
     if exit:
+        pygame.mixer.quit()
         pygame.quit()
     else:
         pygame.time.wait(7000)
