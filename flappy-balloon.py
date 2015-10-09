@@ -14,9 +14,7 @@ WIN_HEIGHT = 980
 ADD_INTERVAL = 5000
 OBSTACLE_GOAL = 10
 
-GRAD = math.pi / 180
 GRAVITY = 2.81
-
 
 class Balloon(pygame.sprite.Sprite):
     """
