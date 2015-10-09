@@ -14,6 +14,8 @@ WIN_HEIGHT = 980
 ADD_INTERVAL = 5000
 OBSTACLE_GOAL = 10
 
+GRAD = math.pi / 180
+GRAVITY = 2.81
 
 
 class Balloon(pygame.sprite.Sprite):
@@ -31,25 +33,38 @@ class Balloon(pygame.sprite.Sprite):
     CLIMB_SPEED = 0.15
     CLIMB_DURATION = 600.3
 
-    def __init__(self, x, y, msec_to_climb, images):
+    def __init__(self, x, y, images):
         pygame.sprite.Sprite.__init__(self)
+        pygame.mixer.init()
         self.x, self.y = x, y
-        self.msec_to_climb = msec_to_climb
         self._img_flameoff, self._img_flameon = images
         self._mask_flameoff = pygame.mask.from_surface(self._img_flameoff)
         self._mask_flameon = pygame.mask.from_surface(self._img_flameon)
 
-    def update(self, delta_frames=1):
-        if self.msec_to_climb > 0:
-            frac_climb_done = 1 - self.msec_to_climb/Balloon.CLIMB_DURATION
-            self.y -= (Balloon.CLIMB_SPEED * frames_to_msec(delta_frames) * (1 - math.cos(frac_climb_done * math.pi)))
-            self.msec_to_climb -= frames_to_msec(delta_frames)
+        try:
+            self.burner = pygame.mixer.Sound("snd/burner.wav");
+        except:
+            print "Cannot load sound: burner.wav"
+        self.dy = 0
+        self.speed = 15.0
+
+    def update(self, seconds):
+        pressedkeys = pygame.key.get_pressed()
+        self.ddy = 0.0
+
+        if pressedkeys[pygame.K_SPACE]:
+            self.burner.play()
+            self.ddy = -1
         else:
-            self.y += Balloon.SINK_SPEED * frames_to_msec(delta_frames)
+            self.burner.stop()
+
+        self.dy += (self.ddy * self.speed) + GRAVITY
+        self.y += self.dy * seconds
 
     @property
     def image(self):
-        if self.msec_to_climb > 0:
+        pressedkeys = pygame.key.get_pressed()
+        if pressedkeys[pygame.K_SPACE]:
             return self._img_flameon
         else:
             return self._img_flameoff
@@ -103,8 +118,8 @@ class Bird(pygame.sprite.Sprite):
     def rect(self):
         return Rect(self.x, self.y + 40, Bird.WIDTH, Bird.HEIGHT + 75)
 
-    def update(self, delta_frames=1):
-        self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
+    def update(self, seconds):
+        self.x -= ANIMATION_SPEED * (seconds * 1000)
 
     def collides_with(self, balloon):
         return pygame.sprite.collide_mask(self,balloon)
@@ -137,8 +152,8 @@ class Plane(pygame.sprite.Sprite):
     def rect(self):
         return Rect(self.x, self.y, Plane.WIDTH, Plane.HEIGHT)
 
-    def update(self, delta_frames=1):
-        self.x -= ANIMATION_SPEED * frames_to_msec(delta_frames)
+    def update(self, seconds):
+        self.x -= ANIMATION_SPEED * (seconds * 1000)
 
     def collides_with(self, balloon):
         return pygame.sprite.collide_mask(self,balloon)
@@ -158,16 +173,12 @@ def load_images():
             'balloon-flameoff': load_image('player_flame_off.png')}
 
 
-def frames_to_msec(frames, fps=FPS):
-    return 1000.0 * frames / fps
-
 def msec_to_frames(milliseconds, fps=FPS):
     return fps * milliseconds / 1000.0
 
 def main():
     # Set up pygame and the screen
     pygame.init()
-    pygame.mixer.init()
     screenInfo = pygame.display.Info()
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pygame.FULLSCREEN);
     pygame.display.set_caption('Flappy Balloon')
@@ -190,7 +201,7 @@ def main():
     screen.blit(background, (0, 0))
     pygame.display.flip()
 
-    balloon = Balloon(50, int(screenInfo.current_h/2 - Balloon.HEIGHT/2), 2, (images['balloon-flameoff'], images['balloon-flameon']))
+    balloon = Balloon(50, int(screenInfo.current_h/2 - Balloon.HEIGHT/2), (images['balloon-flameoff'], images['balloon-flameon']))
 
     obstacles = deque()
 
@@ -199,15 +210,12 @@ def main():
     exit = False
 
 
-    try:
-        burner = pygame.mixer.Sound("snd/burner.wav");
-    except:
-        print "Cannot load sound: burner.wav"
 
     allsprites = pygame.sprite.RenderPlain((balloon))
 
     while not done:
-        clock.tick(FPS)
+        milliseconds = clock.tick(FPS)
+        seconds = milliseconds / 1000.0
 
         if not(frame_clock % msec_to_frames(ADD_INTERVAL)):
             rand = randint(1,2)
@@ -224,9 +232,6 @@ def main():
                 done = True
                 exit = True
                 break
-            elif e.type == KEYUP and e.key in (K_UP, K_RETURN, K_SPACE):
-                balloon.msec_to_climb = Balloon.CLIMB_DURATION
-                burner.play()
             elif e.type == KEYUP and e.key in (K_PAUSE, K_p):
                 paused = not paused
 
@@ -255,7 +260,7 @@ def main():
         score_x = WIN_WIDTH/2 - score_surface.get_width()/2
         screen.blit(score_surface, (score_x, 10))
 
-        allsprites.update()
+        allsprites.update(seconds)
         screen.blit(background, (0,0))
         allsprites.draw(screen)
         score_surface = score_font.render("Obstacles Left: %02d" % count, True, (255, 255, 255))
