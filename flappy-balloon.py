@@ -174,6 +174,7 @@ def load_images():
 def msec_to_frames(milliseconds, fps=FPS):
     return fps * milliseconds / 1000.0
 
+
 def main():
     # Set up pygame and the screen
     pygame.init()
@@ -183,13 +184,11 @@ def main():
     screen.set_alpha(None)
     count = OBSTACLE_GOAL
     win = False
-    paused = False
 
     # initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
     score_font = pygame.font.SysFont("monospace", 25, bold=True)
     result_font = pygame.font.SysFont("monospace", 50, bold=True)
 
-    clock = pygame.time.Clock()
     images = load_images()
 
 
@@ -197,17 +196,23 @@ def main():
     background = background.convert()
     background.fill((51, 102, 153))
     screen.blit(background, (0, 0))
+
+    instructions = score_font.render("Press RED BUTTON to fire burners", True, (255, 255, 255))
+    instructions_x = WIN_WIDTH/2 - instructions.get_width()/2
+    screen.blit(instructions, (instructions_x, WIN_HEIGHT/2))
+
+
+
     pygame.display.flip()
 
+    while (pygame.event.wait().type != KEYDOWN): pass
+
     balloon = Balloon(50, int(screenInfo.current_h/2 - Balloon.HEIGHT/2), (images['balloon-flameoff'], images['balloon-flameon']))
-
-    obstacles = deque()
-
+    clock = pygame.time.Clock()
     frame_clock = 0
     done = False
     exit = False
-
-
+    obstacles = deque()
 
     allsprites = pygame.sprite.RenderPlain((balloon))
 
@@ -230,12 +235,6 @@ def main():
                 done = True
                 exit = True
                 break
-            elif e.type == KEYUP and e.key in (K_PAUSE, K_p):
-                paused = not paused
-
-        if paused:
-            continue
-
 
         balloon_collision = any(b.collides_with(balloon) for b in obstacles)
         if balloon_collision or 0 >= balloon.y or balloon.y >= WIN_HEIGHT - Balloon.HEIGHT:
@@ -254,9 +253,6 @@ def main():
                 done = True
                 win = True
 
-        score_surface = score_font.render("Obstacles Left: %02d" % count, True, (255, 255, 255))
-        score_x = WIN_WIDTH/2 - score_surface.get_width()/2
-        screen.blit(score_surface, (score_x, 10))
 
         allsprites.update(seconds)
         screen.blit(background, (0,0))
