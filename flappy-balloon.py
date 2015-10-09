@@ -240,6 +240,7 @@ def main():
             done = True
 
         while obstacles and not obstacles[0].visible:
+            allsprites.remove(obstacles[0])
             obstacles.popleft()
 
         for b in obstacles:
