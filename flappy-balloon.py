@@ -14,6 +14,8 @@ WIN_HEIGHT = 980
 ADD_INTERVAL = 5000
 OBSTACLE_GOAL = 10
 
+
+
 class Balloon(pygame.sprite.Sprite):
     """
     WIDTH: Pixel width of the balloon
@@ -30,7 +32,7 @@ class Balloon(pygame.sprite.Sprite):
     CLIMB_DURATION = 600.3
 
     def __init__(self, x, y, msec_to_climb, images):
-        super(Balloon, self).__init__()
+        pygame.sprite.Sprite.__init__(self)
         self.x, self.y = x, y
         self.msec_to_climb = msec_to_climb
         self._img_flameoff, self._img_flameon = images
@@ -62,6 +64,7 @@ class Bird(pygame.sprite.Sprite):
     FLAP_SPEED = 100 # ms delay between flaps
 
     def __init__(self, images):
+        pygame.sprite.Sprite.__init__(self)
         self.old_flap_time = pygame.time.get_ticks()
         self.x = float(WIN_WIDTH - 1)
         self.score_counted = False
@@ -112,6 +115,7 @@ class Plane(pygame.sprite.Sprite):
     HEIGHT = 144
 
     def __init__(self, image):
+        pygame.sprite.Sprite.__init__(self)
         self.x = float(WIN_WIDTH - 1)
         self.score_counted = False
         self.y = randint(Plane.HEIGHT, WIN_HEIGHT - Plane.HEIGHT)
@@ -147,8 +151,7 @@ def load_images():
         img.convert_alpha()
         return img
 
-    return {'background': load_image('background.png'),
-            'balloon-flameon': load_image('player_flame_on.png'),
+    return {'balloon-flameon': load_image('player_flame_on.png'),
             'bird-up': load_image('bird_up.png'),
             'bird-down': load_image('bird_down.png'),
             'plane': load_image('plane.png'),
@@ -180,8 +183,12 @@ def main():
     clock = pygame.time.Clock()
     images = load_images()
 
-    images['background'] = pygame.transform.scale(images['background'], (screenInfo.current_w, screenInfo.current_h))
-    screen.blit(images['background'], (0,0))
+
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill((51, 102, 153))
+    screen.blit(background, (0, 0))
+    pygame.display.flip()
 
     balloon = Balloon(50, int(screenInfo.current_h/2 - Balloon.HEIGHT/2), 2, (images['balloon-flameoff'], images['balloon-flameon']))
 
@@ -191,10 +198,13 @@ def main():
     done = False
     exit = False
 
+
     try:
         burner = pygame.mixer.Sound("snd/burner.wav");
     except:
         print "Cannot load sound: burner.wav"
+
+    allsprites = pygame.sprite.RenderPlain((balloon))
 
     while not done:
         clock.tick(FPS)
@@ -206,6 +216,7 @@ def main():
             elif rand == 2:
                 obstacle = Plane(images['plane'])
 
+            allsprites.add(obstacle)
             obstacles.append(obstacle)
 
         for e in pygame.event.get():
@@ -231,41 +242,38 @@ def main():
         while obstacles and not obstacles[0].visible:
             obstacles.popleft()
 
-        balloon.update()
-        # Redraw only the portion of the background where the balloon is
-        screen.blit(images['background'], (balloon.rect.x, balloon.rect.y - 2), (balloon.rect.x, balloon.rect.y, balloon.rect.width, balloon.rect.height + 7))
-        # Redraw the balloon
-        screen.blit(balloon.image, balloon.rect)
-
         for b in obstacles:
-            b.update()
             if b.passed(balloon.rect.x) and b.score_counted == False:
                 count -= 1
                 b.score_counted = True
             if count == 0:
                 done = True
                 win = True
-            screen.blit(balloon.image, (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width, b.rect.height))
-            screen.blit(images['background'], (b.rect.x, b.rect.y), Rect(b.rect.x, b.rect.y, b.rect.width + 5, b.rect.height))
-            screen.blit(b.image, b.rect)
 
         score_surface = score_font.render("Obstacles Left: %02d" % count, True, (255, 255, 255))
         score_x = WIN_WIDTH/2 - score_surface.get_width()/2
-        screen.blit(images['background'], (score_x, 10), score_surface.get_rect())
         screen.blit(score_surface, (score_x, 10))
+
+        allsprites.update()
+        screen.blit(background, (0,0))
+        allsprites.draw(screen)
+        score_surface = score_font.render("Obstacles Left: %02d" % count, True, (255, 255, 255))
+        score_x = WIN_WIDTH/2 - score_surface.get_width()/2
+        screen.blit(score_surface, (score_x, 10))
+
 
         pygame.display.flip()
         frame_clock += 1
 
 
-    screen.blit(images['background'],(0,0))
+    screen.blit(background,(0,0))
 
     if win:
         score_surface = result_font.render("YOU WIN!", True, (0, 153, 0))
         score_x = WIN_WIDTH/2 - score_surface.get_width()/2
         screen.blit(score_surface, (score_x, WIN_HEIGHT/2))
     else:
-        score_surface = result_font.render("GAME OVER!", True, (204, 0, 0))
+        score_surface = result_font.render("GAME OVER!", True, (255, 255, 153))
         score_x = WIN_WIDTH/2 - score_surface.get_width()/2
         screen.blit(score_surface, (score_x, WIN_HEIGHT/2))
 
