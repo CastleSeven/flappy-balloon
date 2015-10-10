@@ -72,8 +72,8 @@ class Balloon(pygame.sprite.Sprite):
         return Rect(self.x, self.y, Balloon.WIDTH, Balloon.HEIGHT)
 
 class Bird(pygame.sprite.Sprite):
-    WIDTH = 296
-    HEIGHT = 260
+    WIDTH = 237
+    HEIGHT = 280
     FLAP_SPEED = 100 # ms delay between flaps
 
     def __init__(self, images):
