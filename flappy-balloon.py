@@ -9,9 +9,11 @@ from pygame.locals import *
 
 FPS = 60;
 ANIMATION_SPEED = 0.30
+CLOUD_SPEED = .10
 WIN_WIDTH = 1820
 WIN_HEIGHT = 980
 ADD_INTERVAL = 5000
+CLOUD_INTERVAL = 2000
 OBSTACLE_GOAL = 10
 
 GRAVITY = 2.81
@@ -123,6 +125,30 @@ class Bird(pygame.sprite.Sprite):
         return pygame.sprite.collide_mask(self,balloon)
 
 
+class Cloud(pygame.sprite.Sprite):
+    WIDTH = 206
+    HEIGHT = 130
+
+    def __init__(self, clouds):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = float(WIN_WIDTH - 1)
+        self.y = randint(Cloud.HEIGHT, WIN_HEIGHT - Plane.HEIGHT)
+        random_offset = randint(0, len(clouds) - 1)
+        image_name = 'cloud-' + str(random_offset)
+        self._img = clouds[image_name]
+        self.mask = pygame.mask.from_surface(self._img)
+
+    @property
+    def image(self):
+        return self._img
+
+    @property
+    def rect(self):
+        return Rect(self.x, self.y, Cloud.WIDTH, Cloud.HEIGHT)
+
+    def update(self, seconds):
+        self.x -= CLOUD_SPEED * (seconds * 1000)
+
 class Plane(pygame.sprite.Sprite):
     WIDTH = 235
     HEIGHT = 144
@@ -171,6 +197,21 @@ def load_images():
             'balloon-flameoff': load_image('player_flame_off.png')}
 
 
+def load_clouds():
+
+    def load_image(img_file_name):
+        file_name = os.path.join('.', 'images', img_file_name)
+        img = pygame.image.load(file_name)
+        img.convert_alpha()
+        return img
+
+    return {'cloud-0': load_image('cloud-0.png'),
+            'cloud-1': load_image('cloud-1.png'),
+            'cloud-2': load_image('cloud-2.png'),
+            'cloud-3': load_image('cloud-3.png'),
+            'cloud-4': load_image('cloud-4.png'),
+            'cloud-5': load_image('cloud-5.png')}
+
 def msec_to_frames(milliseconds, fps=FPS):
     return fps * milliseconds / 1000.0
 
@@ -190,6 +231,7 @@ def main():
     result_font = pygame.font.SysFont("monospace", 50, bold=True)
 
     images = load_images()
+    clouds = load_clouds()
 
 
     background = pygame.Surface(screen.get_size())
@@ -229,6 +271,10 @@ def main():
 
             allsprites.add(obstacle)
             obstacles.append(obstacle)
+
+        if not(frame_clock % msec_to_frames(CLOUD_INTERVAL)):
+            cloud = Cloud(clouds)
+            allsprites.add(cloud)
 
         for e in pygame.event.get():
             if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
