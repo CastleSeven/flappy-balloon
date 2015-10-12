@@ -182,6 +182,72 @@ class Plane(pygame.sprite.Sprite):
     def collides_with(self, balloon):
         return pygame.sprite.collide_mask(self,balloon)
 
+class Jet(pygame.sprite.Sprite):
+    WIDTH = 292
+    HEIGHT = 160
+
+    def __init__(self, image):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = float(WIN_WIDTH - 1)
+        self.score_counted = False
+        self.y = randint(Jet.HEIGHT, WIN_HEIGHT - Jet.HEIGHT)
+        self._img = image
+        self.mask = pygame.mask.from_surface(self.image)
+
+    @property
+    def image(self):
+        return self._img
+
+    @property
+    def visible(self):
+        return -Jet.WIDTH < self.x < WIN_WIDTH
+
+    def passed(self, x):
+        return 0 < self.x < x
+
+    @property
+    def rect(self):
+        return Rect(self.x, self.y, Jet.WIDTH, Jet.HEIGHT)
+
+    def update(self, seconds):
+        self.x -= ANIMATION_SPEED * (seconds * 1000)
+
+    def collides_with(self, balloon):
+        return pygame.sprite.collide_mask(self,balloon)
+
+class Saucer(pygame.sprite.Sprite):
+    WIDTH = 200
+    HEIGHT = 160
+
+    def __init__(self, image):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = float(WIN_WIDTH - 1)
+        self.score_counted = False
+        self.y = randint(Saucer.HEIGHT, WIN_HEIGHT - Saucer.HEIGHT)
+        self._img = image
+        self.mask = pygame.mask.from_surface(self.image)
+
+    @property
+    def image(self):
+        return self._img
+
+    @property
+    def visible(self):
+        return -Saucer.WIDTH < self.x < WIN_WIDTH
+
+    def passed(self, x):
+        return 0 < self.x < x
+
+    @property
+    def rect(self):
+        return Rect(self.x, self.y, Saucer.WIDTH, Saucer.HEIGHT)
+
+    def update(self, seconds):
+        self.x -= ANIMATION_SPEED * (seconds * 1000)
+
+    def collides_with(self, balloon):
+        return pygame.sprite.collide_mask(self,balloon)
+
 def load_images():
 
     def load_image(img_file_name):
@@ -194,6 +260,8 @@ def load_images():
             'bird-up': load_image('bird_up.png'),
             'bird-down': load_image('bird_down.png'),
             'plane': load_image('plane.png'),
+            'jet': load_image('fighter-jet.png'),
+            'saucer': load_image('saucer.png'),
             'balloon-flameoff': load_image('player_flame_off.png')}
 
 
@@ -263,11 +331,15 @@ def main():
         seconds = milliseconds / 1000.0
 
         if not(frame_clock % msec_to_frames(ADD_INTERVAL)):
-            rand = randint(1,2)
+            rand = randint(1,4)
             if rand == 1:
                 obstacle = Bird((images['bird-up'], images['bird-down']))
             elif rand == 2:
                 obstacle = Plane(images['plane'])
+            elif rand == 3:
+                obstacle = Jet(images['jet'])
+            elif rand == 4:
+                obstacle = Saucer(images['saucer'])
 
             allsprites.add(obstacle)
             obstacles.append(obstacle)
