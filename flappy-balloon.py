@@ -273,12 +273,12 @@ def load_clouds():
         img.convert_alpha()
         return img
 
-    return {'cloud-0': load_image('cloud-0.png'),
-            'cloud-1': load_image('cloud-1.png'),
-            'cloud-2': load_image('cloud-2.png'),
-            'cloud-3': load_image('cloud-3.png'),
-            'cloud-4': load_image('cloud-4.png'),
-            'cloud-5': load_image('cloud-5.png')}
+    return {'cloud-0': load_image('_cloud-0.png'),
+            'cloud-1': load_image('_cloud-1.png'),
+            'cloud-2': load_image('_cloud-2.png'),
+            'cloud-3': load_image('_cloud-3.png'),
+            'cloud-4': load_image('_cloud-4.png'),
+            'cloud-5': load_image('_cloud-5.png')}
 
 def msec_to_frames(milliseconds, fps=FPS):
     return fps * milliseconds / 1000.0
