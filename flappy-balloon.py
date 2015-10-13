@@ -419,13 +419,16 @@ def main():
     screen.blit(background,(0,0))
 
     if win:
-        score_surface = result_font.render("YOU WIN!", True, (0, 153, 0))
+        score_surface = result_font.render("YOU WIN!", True, (148, 242, 116))
         score_x = WIN_WIDTH/2 - score_surface.get_width()/2
         screen.blit(score_surface, (score_x, WIN_HEIGHT/2))
     else:
-        score_surface = result_font.render("GAME OVER!", True, (255, 255, 153))
+        score_surface = result_font.render("GAME OVER", True, (255, 255, 153))
         score_x = WIN_WIDTH/2 - score_surface.get_width()/2
+        objects_left_surface = result_font.render("%02d Obstacles Remaining!" % count, True, (255, 255, 153))
+        objects_left_x = WIN_WIDTH/2 - objects_left_surface.get_width()/2
         screen.blit(score_surface, (score_x, WIN_HEIGHT/2))
+        screen.blit(objects_left_surface, (objects_left_x, WIN_HEIGHT/2 + 5 + score_surface.get_height()))
 
     pygame.display.update()
     if exit:
