@@ -146,6 +146,10 @@ class Cloud(pygame.sprite.Sprite):
     def rect(self):
         return Rect(self.x, self.y, Cloud.WIDTH, Cloud.HEIGHT)
 
+    @property
+    def visible(self):
+        return -300 < self.x < (WIN_WIDTH + 2)
+
     def update(self, seconds):
         self.x -= CLOUD_SPEED * (seconds * 1000)
 
@@ -316,6 +320,7 @@ def main():
     menu_clock = pygame.time.Clock()
     menu_frame_clock = 0
     menu_sprites = pygame.sprite.RenderPlain()
+    menu_clouds = deque()
 
     start = False
 
@@ -330,6 +335,11 @@ def main():
         if not(menu_frame_clock % msec_to_frames(CLOUD_INTERVAL)):
             menu_cloud = Cloud(clouds)
             menu_sprites.add(menu_cloud)
+            menu_clouds.append(menu_cloud)
+
+        while menu_clouds and not menu_clouds[0].visible:
+            menu_sprites.remove(menu_clouds[0])
+            menu_clouds.popleft()
 
         menu_sprites.update(menu_seconds)
         screen.blit(background, (0,0))
