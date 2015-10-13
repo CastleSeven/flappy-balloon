@@ -294,6 +294,7 @@ def main():
     screen.set_alpha(None)
     count = OBSTACLE_GOAL
     win = False
+    pygame.mouse.set_visible(0)
 
     # initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
     score_font = pygame.font.SysFont("monospace", 25, bold=True)
