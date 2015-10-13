@@ -262,6 +262,7 @@ def load_images():
             'plane': load_image('plane.png'),
             'jet': load_image('fighter-jet.png'),
             'saucer': load_image('saucer.png'),
+            'instructions': load_image('flappy-instructions.png'),
             'balloon-flameoff': load_image('player_flame_off.png')}
 
 
@@ -307,15 +308,35 @@ def main():
     background.fill((51, 102, 153))
     screen.blit(background, (0, 0))
 
-    instructions = score_font.render("Press RED BUTTON to fire burners", True, (255, 255, 255))
-    instructions_x = WIN_WIDTH/2 - instructions.get_width()/2
-    screen.blit(instructions, (instructions_x, WIN_HEIGHT/2))
-
-
+    screen.blit(images['instructions'], (410,0))
 
     pygame.display.flip()
 
-    while (pygame.event.wait().type != KEYDOWN): pass
+    menu_clock = pygame.time.Clock()
+    menu_frame_clock = 0
+    menu_sprites = pygame.sprite.RenderPlain()
+
+    start = False
+
+    while not start:
+        menu_milliseconds = menu_clock.tick(FPS)
+        menu_seconds = menu_milliseconds / 1000.0
+
+        for e in pygame.event.get():
+            if e.type == KEYDOWN:
+                start = True
+
+        if not(menu_frame_clock % msec_to_frames(CLOUD_INTERVAL)):
+            menu_cloud = Cloud(clouds)
+            menu_sprites.add(menu_cloud)
+
+        menu_sprites.update(menu_seconds)
+        screen.blit(background, (0,0))
+        screen.blit(images['instructions'], (410,0))
+        menu_sprites.draw(screen)
+
+        pygame.display.flip()
+        menu_frame_clock += 1
 
     balloon = Balloon(50, int(screenInfo.current_h/2 - Balloon.HEIGHT/2), (images['balloon-flameoff'], images['balloon-flameon']))
     clock = pygame.time.Clock()
