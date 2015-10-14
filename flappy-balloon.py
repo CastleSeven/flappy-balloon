@@ -26,7 +26,7 @@ class Balloon(pygame.sprite.Sprite):
 
     WIDTH = 177
     HEIGHT = 250
-    BURNER_SPEED = 15.0
+    BURNER_SPEED = 10.0
 
     def __init__(self, x, y, images):
         pygame.sprite.Sprite.__init__(self)
