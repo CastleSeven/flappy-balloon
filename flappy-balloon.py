@@ -22,16 +22,11 @@ class Balloon(pygame.sprite.Sprite):
     """
     WIDTH: Pixel width of the balloon
     HEIGHT: Pixel height of the balloon
-    SINK_SPEED: Speed in pixels/ms that the balloon descends while not climbing
-    CLIMB_SPEED: Speed in p/ms that the balloon ascends while climbing (on average)
-    CLIMB_DURATION: The # of ms for the balloon to make a complete ascent
     """
 
     WIDTH = 177
     HEIGHT = 250
-    SINK_SPEED = 0.09
-    CLIMB_SPEED = 0.15
-    CLIMB_DURATION = 600.3
+    BURNER_SPEED = 15.0
 
     def __init__(self, x, y, images):
         pygame.sprite.Sprite.__init__(self)
@@ -46,7 +41,7 @@ class Balloon(pygame.sprite.Sprite):
         except:
             print "Cannot load sound: burner.wav"
         self.dy = 0
-        self.speed = 15.0
+        self.speed = Balloon.BURNER_SPEED
 
     def update(self, seconds):
         pressedkeys = pygame.key.get_pressed()
