@@ -52,7 +52,7 @@ class Balloon(pygame.sprite.Sprite):
         pressedkeys = pygame.key.get_pressed()
         self.ddy = 0.0
 
-        if pressedkeys[pygame.K_SPACE]:
+        if pressedkeys[pygame.K_UP]:
             self.burner.play()
             self.ddy = -1
         else:
@@ -64,7 +64,7 @@ class Balloon(pygame.sprite.Sprite):
     @property
     def image(self):
         pressedkeys = pygame.key.get_pressed()
-        if pressedkeys[pygame.K_SPACE]:
+        if pressedkeys[pygame.K_UP]:
             return self._img_flameon
         else:
             return self._img_flameoff
