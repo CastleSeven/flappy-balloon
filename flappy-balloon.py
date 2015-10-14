@@ -27,8 +27,8 @@ class Balloon(pygame.sprite.Sprite):
     CLIMB_DURATION: The # of ms for the balloon to make a complete ascent
     """
 
-    WIDTH = 212
-    HEIGHT = 300
+    WIDTH = 177
+    HEIGHT = 250
     SINK_SPEED = 0.09
     CLIMB_SPEED = 0.15
     CLIMB_DURATION = 600.3
@@ -260,14 +260,14 @@ def load_images():
         img.convert_alpha()
         return img
 
-    return {'balloon-flameon': load_image('player_flame_on.png'),
+    return {'balloon-flameon': load_image('player_flame_on_small.png'),
             'bird-up': load_image('bird_up.png'),
             'bird-down': load_image('bird_down.png'),
             'plane': load_image('plane.png'),
             'jet': load_image('fighter-jet.png'),
             'saucer': load_image('saucer.png'),
             'instructions': load_image('flappy-instructions.png'),
-            'balloon-flameoff': load_image('player_flame_off.png')}
+            'balloon-flameoff': load_image('player_flame_off_small.png')}
 
 
 def load_clouds():
