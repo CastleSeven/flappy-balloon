@@ -56,6 +56,11 @@ class Balloon(pygame.sprite.Sprite):
         self.dy += (self.ddy * self.speed) + GRAVITY
         self.y += self.dy * seconds
 
+	if self.y < (0 - Balloon.HEIGHT):
+		self.y = WIN_HEIGHT
+	elif (self.y > WIN_HEIGHT):
+		self.y = 0 - Balloon.HEIGHT
+
     @property
     def image(self):
         pressedkeys = pygame.key.get_pressed()
@@ -382,7 +387,7 @@ def main():
                 break
 
         balloon_collision = any(b.collides_with(balloon) for b in obstacles)
-        if balloon_collision or 0 >= balloon.y or balloon.y >= WIN_HEIGHT - Balloon.HEIGHT:
+        if balloon_collision:
             win = False
             done = True
 
