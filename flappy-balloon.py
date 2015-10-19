@@ -292,6 +292,11 @@ def msec_to_frames(milliseconds, fps=FPS):
 def main():
     # Set up pygame and the screen
     pygame.init()
+    pygame.mixer.init()
+    try:
+        explosion = pygame.mixer.Sound("snd/explosion.wav");
+    except:
+        print "Cannot load sound: explosion.wav"
     screenInfo = pygame.display.Info()
     screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pygame.FULLSCREEN);
     pygame.display.set_caption('Flappy Balloon')
@@ -357,6 +362,9 @@ def main():
     obstacles = deque()
 
     allsprites = pygame.sprite.RenderPlain((balloon))
+    pygame.mixer.music.load("snd/Jumpshot.mp3")
+    pygame.mixer.music.set_volume(0.5)
+    pygame.mixer.music.play(-1, randint(0,90))
 
     while not done:
         milliseconds = clock.tick(FPS)
@@ -388,6 +396,8 @@ def main():
 
         balloon_collision = any(b.collides_with(balloon) for b in obstacles)
         if balloon_collision:
+            pygame.mixer.music.stop()
+            explosion.play()
             win = False
             done = True
 
