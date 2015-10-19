@@ -38,6 +38,7 @@ class Balloon(pygame.sprite.Sprite):
 
         try:
             self.burner = pygame.mixer.Sound("snd/burner.wav");
+            self.burner.set_volume(0.2)
         except:
             print "Cannot load sound: burner.wav"
         self.dy = 0
