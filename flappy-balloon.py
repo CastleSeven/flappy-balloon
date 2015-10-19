@@ -308,6 +308,7 @@ def main():
     # initialize font; must be called after 'pygame.init()' to avoid 'Font not Initialized' error
     score_font = pygame.font.SysFont("monospace", 25, bold=True)
     result_font = pygame.font.SysFont("monospace", 50, bold=True)
+    attribute_font = pygame.font.SysFont("monospace", 12, bold=False)
 
     images = load_images()
     clouds = load_clouds()
@@ -439,6 +440,24 @@ def main():
         objects_left_x = WIN_WIDTH/2 - objects_left_surface.get_width()/2
         screen.blit(score_surface, (score_x, WIN_HEIGHT/2))
         screen.blit(objects_left_surface, (objects_left_x, WIN_HEIGHT/2 + 5 + score_surface.get_height()))
+
+
+
+    attribute1_surface = attribute_font.render("Music: \"Jumpshot\" by Eric Skiff", True, (25, 50, 75))
+    attribute1_y = WIN_HEIGHT - attribute1_surface.get_height() - 30
+    attribute1_x = WIN_WIDTH - attribute1_surface.get_width() - 10
+    screen.blit(attribute1_surface, (attribute1_x, attribute1_y))
+
+    attribute2_surface = attribute_font.render("FX: \"Explosion 3\" by killkahn", True, (25, 50, 75))
+    attribute2_y = WIN_HEIGHT - attribute2_surface.get_height() - 20
+    attribute2_x = WIN_WIDTH - attribute2_surface.get_width() - 10
+    screen.blit(attribute2_surface, (attribute2_x, attribute2_y))
+
+    attribute3_surface = attribute_font.render("Developed by Enomalies", True, (25, 50, 75))
+    attribute3_y = WIN_HEIGHT - attribute3_surface.get_height() - 10
+    attribute3_x = WIN_WIDTH - attribute3_surface.get_width() - 10
+    screen.blit(attribute3_surface, (attribute3_x, attribute3_y))
+
 
     pygame.display.update()
     if exit:
