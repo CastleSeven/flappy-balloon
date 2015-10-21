@@ -398,7 +398,6 @@ def main():
 
         balloon_collision = any(b.collides_with(balloon) for b in obstacles)
         if balloon_collision:
-            pygame.mixer.music.stop()
             explosion.play()
             win = False
             done = True
@@ -466,8 +465,8 @@ def main():
         pygame.mixer.quit()
         pygame.quit()
     else:
+        pygame.time.wait(5000)
         pygame.mixer.quit()
-        pygame.time.wait(7000)
         main()
 
 
