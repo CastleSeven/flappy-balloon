@@ -428,6 +428,7 @@ def main():
         frame_clock += 1
 
 
+    pygame.mixer.music.stop()
     screen.blit(background,(0,0))
 
     if win:
@@ -465,6 +466,7 @@ def main():
         pygame.mixer.quit()
         pygame.quit()
     else:
+        pygame.mixer.quit()
         pygame.time.wait(7000)
         main()
 
